@@ -12,6 +12,8 @@ players_stat <- read.csv('players_stats.csv',sep = ";")
 players_stat$Team <- tolower(players_stat$Team)
 team_stat    <- read.csv('team_stats.csv'   ,sep = ";")
 team_stat$Team <- tolower(team_stat$Team)
+possession_stat    <- read.csv('possession.csv', sep = ";")
+possession_stat$team <- tolower(possession_stat$team)
 #sum up fouls data from player view to team view
 by_team <- group_by(players_stat,Team)
 team_sums <- summarise(by_team, sum(Yellow.Cards),
@@ -59,3 +61,20 @@ ggplot(total_stats_no_romania,aes(x=total_stats_no_romania$`sum(Fouls.Committed)
   geom_point()+
   geom_text(nudge_y =0.2)+
   geom_smooth(method='lm',formula=y~x)
+
+
+# ball possession analysis
+
+#split dataset and merge back in order to have one record for each team
+possession_a <- possession_stat[,-c(4,8)]
+possession_a$win <- possession_a$score > possession_a$score_
+
+possession_b <- possession_stat[,-c(3,7)]
+possession_b$win <- possession_b$score < possession_b$score_
+
+possession_a <- possession_a[,-5]
+possession_b <- possession_b[,-4]
+
+colnames(possession_b) <- colnames(possession_a)
+
+possession_tidy <- rbind(possession_a,possession_b)
