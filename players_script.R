@@ -80,6 +80,21 @@ possession_tidy <- rbind(possession_a,possession_b)
 dummy_win <- as.data.frame(dummy(possession_tidy$win))
 possession_tidy$win_dummy <- dummy_win[,2]
 
+#country possession stats
+
+by_team_pos <- group_by(possession_tidy,team)
+team_means <- summarise(by_team_pos, mean(possession))
+colnames(team_means) <- c("region","value")
+
+possession_plot <- country_choropleth(team_means,
+                                 title = "percentage ball possession",
+                                 legend="% possession",
+                                 num_colors=1)+
+  xlim(-31.266001, 39.869301)+
+  ylim(27.636311, 81.008797) +
+  coord_map("lambert", lat0=27.636311, lat1=81.008797)
+possession_plot
+
 #logistic regression
 
 ggplot(data = possession_tidy,aes(x = possession)) +
